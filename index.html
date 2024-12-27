@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Video Finder</title>
+    <link rel="stylesheet" href="style.css">
+
+
+    <script>
+        async function getAnimeVideos() {
+    const animeInput = document.getElementById("animeInput").value;
+    const animeResult = document.getElementById("animeResult");
+    
+    if (!animeInput) {
+        alert("Please enter an anime name.");
+        return;
+    }
+
+
+    animeResult.innerHTML = "Loading...";
+
+    try {
+        
+        const response = await fetch(`https://api.jikan.moe/v4/anime?q=${animeInput}&limit=1`);
+        
+        if (!response.ok) {
+            throw new Error("Anime not found.");
+        }
+
+        const data = await response.json();
+        const anime = data.data[0];  
+
+       
+        const youtubeSearchUrl = `https://www.youtube.com/results?search_query=${anime.title}+trailer`;
+
+        
+        animeResult.innerHTML = `
+            <div class="video-card">
+                <h3>${anime.title}</h3>
+                <p><strong>Type:</strong> ${anime.type}</p>
+                <p><strong>Score:</strong> ${anime.score}</p>
+                <p><strong>Episodes:</strong> ${anime.episodes ? anime.episodes : "N/A"}</p>
+                <p><strong>Synopsis:</strong> ${anime.synopsis}</p>
+                <p><strong>Trailer:</strong> <a href="${youtubeSearchUrl}" target="_blank">Watch Trailer</a></p>
+            </div>
+        `;
+    } catch (error) {
+        animeResult.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+    }
+}
+
+    </script>
+
+</head>
+<body>
+    <div class="container">
+        <h1>Anime Video Finder</h1>
+        <div class="search">
+            <input type="text" id="animeInput" placeholder="Enter Anime Name">
+            <button onclick="getAnimeVideos()">Search</button>
+        </div>
+        <div id="animeResult" class="result">
+            
+        </div>
+    </div>
+
+</body>
+</html>
